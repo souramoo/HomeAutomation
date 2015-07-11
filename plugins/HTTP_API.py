@@ -5,23 +5,36 @@ from Sensor import Sensor
 import Driver
 from os import curdir, sep
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+from SocketServer import ThreadingMixIn
+
+class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
+    """Handle requests in a separate thread."""
 
 class MyHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         try:
             bits = string.split(self.path, "/")
-            if len(bits) > 3:
+            if len(bits) > 4:
                 id = bits[1]
-                param = bits[2]
-                value = bits[3]
+                getset = bits[2]
+                param = bits[3]
+                value = bits[4]
                 for f in Driver.Drivers:
                     if f[0] == int(id):
-                        f[1].setParameter(param, value)
                         self.send_response(200)
                         self.send_header('Content-type',    'text/html')
                         self.end_headers()
-                        self.wfile.write("OK")
-                        return
+
+                        if getset == "set":
+                            f[1].setParameter(param, value)
+                            self.wfile.write("OK")
+                            return
+                        elif getset == "get":
+                            params = f[1].getParameters()
+                            for p in params:
+                                if p[0] == param:
+                                    self.wfile.write(p[1])
+                            return
             self.send_response(200)
             self.send_header('Content-type',	'text/html')
             self.end_headers()
@@ -36,7 +49,7 @@ class MyHandler(BaseHTTPRequestHandler):
 class APIThread(threading.Thread):
     def run(self):
         try:
-            server = HTTPServer(('', 8090), MyHandler)
+            server = ThreadedHTTPServer(('', 8090), MyHandler)
             print 'started httpserver...'
             server.serve_forever()
         except KeyboardInterrupt:
