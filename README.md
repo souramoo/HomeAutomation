@@ -7,3 +7,5 @@ I wrote this in python to simplify my home automation control. The other approac
 This system provides a simple plug and play architecture, where I can write Drivers (outputs) and Sensors (inputs, which can trigger events into a queue for processing by EventProcessors or simply provide a passive reading when needed)
 
 EventProcessors can be subclasses to provide a way for different triggers to provide different outputs. A HTTP API is provided (implemented as a sensor) to allow control over devices over wifi, for example.
+
+Drivers support persistance of data to provide continuity.
