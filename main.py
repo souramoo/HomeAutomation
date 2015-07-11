@@ -14,6 +14,15 @@ test = Lightbulb.connect(1, "44:A6:E5:03:27:F9", '71', '151')
 
 #print test.getParameters()
 
+#b = 100
+#while b > 1:
+#    test.setParameter("brightness", b)
+#    b = b-1
+#    time.sleep(0.1)
+
+#test.setParameter("color", 1)
+#test.setParameter("brightness", 100)
+
 class TestHandler(Sensor.EventHandler):
     def __init__(self):
         Sensor.EventHandler.__init__(self)
