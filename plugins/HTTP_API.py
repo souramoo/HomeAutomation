@@ -1,62 +1,50 @@
-import string,cgi,time
+import string,time
 import subprocess
 import threading
 from Sensor import Sensor
 import Driver
 from os import curdir, sep
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-from SocketServer import ThreadingMixIn
+import cherrypy
 
-class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
-    """Handle requests in a separate thread."""
-
-class MyHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        try:
-            bits = string.split(self.path, "/")
-            if len(bits) > 4:
-                id = bits[1]
-                getset = bits[2]
-                param = bits[3]
-                value = bits[4]
-                for f in Driver.Drivers:
-                    if f[0] == int(id):
-                        self.send_response(200)
-                        self.send_header('Content-type',    'text/html')
-                        self.end_headers()
-
-                        if getset == "set":
-                            f[1].setParameter(param, value)
-                            self.wfile.write("OK")
-                            return
-                        elif getset == "get":
-                            params = f[1].getParameters()
-                            for p in params:
-                                if p[0] == param:
-                                    self.wfile.write(p[1])
-                            return
-            self.send_response(200)
-            self.send_header('Content-type',	'text/html')
-            self.end_headers()
-            self.wfile.write("Error")
-            return
-        except IOError:
-            self.send_error(404,'File Not Found: %s' % self.path)
-
-    def do_POST(self):
+def Handler(environ, start_response):
+    start_response('200 OK', [('Content-Type', 'text/plain')])
+    path = environ['REQUEST_URI']
+    try:
+        bits = string.split(path, "/")
+        if len(bits) > 4:
+            id = bits[1]
+            getset = bits[2]
+            param = bits[3]
+            value = bits[4]
+            for f in Driver.Drivers:
+                if f[0] == int(id):
+                    if getset == "set":
+                        f[1].setParameter(param, value)
+                        yield "OK"
+                        return
+                    elif getset == "get":
+                        params = f[1].getParameters()
+                        for p in params:
+                            if p[0] == param:
+                                yield str(p[1])
+                                return
+        yield "Error"
         return
+    except IOError:
+         yield 'File Not Found'
 
-class APIThread(threading.Thread):
+class ServerThread(threading.Thread):
     def run(self):
-        try:
-            server = ThreadedHTTPServer(('', 8090), MyHandler)
-            print 'started httpserver...'
-            server.serve_forever()
-        except KeyboardInterrupt:
-            print '^C received, shutting down server'
-            server.socket.close()
+        cherrypy.config.update({'server.socket_host': '0.0.0.0',
+                        'server.socket_port': 8090,
+                       })
+        cherrypy.tree.graft(Handler, '/')
+       
+        cherrypy.engine.start()
+        cherrypy.engine.block()
+
 
 class HTTP_API(Sensor):
     def __init__(self):
         Sensor.__init__(self)
-        APIThread().start()
+        ServerThread().start()

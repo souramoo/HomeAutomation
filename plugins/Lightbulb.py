@@ -2,6 +2,7 @@
 # By S. Mookerjee 2015
 
 from Driver import Driver
+import Sensor
 import subprocess
 import sys, string
 import os.path
@@ -36,6 +37,7 @@ class connect(Driver):
             subprocess.call(['/usr/bin/gatttool', '-b', self.mac, '--char-write-req', '-a', '0x0012', '-n', self.createPacket("[85, 161, " + self.id1 + ", " + self.id2 + ", 2, 2, 0, 0, 0, 0, 0]")])
         else:
             subprocess.call(['/usr/bin/gatttool', '-b', self.mac, '--char-write-req', '-a', '0x0012', '-n', self.createPacket("[32, 161, " + self.id1 + ", " + self.id2 + ", 2, 1, 0, 0, 0, 0, 0]")])
+        Sensor.EventQueue.put(["lightbulb", self.id, self.status])
 
     def getParameters(self):
         # [[name, value, conditional on other objectid

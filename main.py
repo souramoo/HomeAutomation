@@ -1,10 +1,16 @@
+#!/usr/bin/env python
 from plugins import *
 from plugins import Sensor
 from plugins import HTTP_API
+from plugins import CapSwitch
 import time
 import os
 
+CapSwitch.CapSwitch("/dev/ttyUSB0")
+
 test = Lightbulb.connect(1, "44:A6:E5:03:27:F9", '71', '151')
+test2 = Lightbulb.connect(2, "44:A6:E5:03:27:DF", '89', '119')
+
 #test.setStatus(1)
 #time.sleep(5)
 #test.setParameter("color", 1)
@@ -37,6 +43,7 @@ class TestSensor(Sensor.Sensor):
 
 #TestHandler()
 #TestSensor()
+
 HTTP_API.HTTP_API()
 
 
