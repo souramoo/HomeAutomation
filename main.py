@@ -11,22 +11,22 @@ CapSwitch.CapSwitch(SerialEnumeration.find("capbutton1"))
 # Telephony services
 rotdial = RotaryDial.RotaryDial(SerialEnumeration.find("rotarydial"))
 
-# Various telemetry and electromagnetic relay control
-srb = SensorRelayBoard.SensorRelayBoard(SerialEnumeration.find("sensorrelay"))
-SensorRelayBoard.Relay(3, 1, srb.ser)
-
 # Handle telephony requests and connect calls
 CustomHandlers.RotaryHandler(rotdial.ser)
-
-# Test temporal quantification mechanism
-CustomHandlers.Timer()
 
 # Interface with a light production mechanism
 test = Lightbulb.connect(1, "44:A6:E5:03:27:F9", '71', '151')
 test2 = Lightbulb.connect(2, "44:A6:E5:03:27:DF", '89', '119')
 
+# Various telemetry and electromagnetic relay control
+srb = SensorRelayBoard.SensorRelayBoard(SerialEnumeration.find("sensorrelay"))
+SensorRelayBoard.Relay(3, 1, srb.ser)
+
 # Allow control over a most curious telegraphy system
 HTTP_API.HTTP_API()
+
+# Test temporal quantification mechanism
+CustomHandlers.Timer().start()
 
 #test.setStatus(1)
 #time.sleep(5)
