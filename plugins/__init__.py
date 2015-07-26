@@ -1,1 +1,1 @@
-__all__ = ["Lightbulb", "Driver"]
+__all__ = ["Driver", "Sensor", "SerialEnumeration", "HTTP_API", "Lightbulb", "CapSwitch","RotaryDial", "SensorRelayBoard"]
