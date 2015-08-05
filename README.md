@@ -1,5 +1,5 @@
 # Home Automation
-Python-based modular home automation system.
+Python-based modular home automation system. Far improved upon from my previous attempt. Now modular and supports various different control/sensor/processor elements.
 
 ## What is it?
 I wrote this in python to simplify my home automation control. The other approaches I have seen are very complicated and are slow on my Raspberry Pi, and hard to customise to do what I want with my own custom bindings.
