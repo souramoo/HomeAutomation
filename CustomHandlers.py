@@ -63,8 +63,18 @@ class Timer(threading.Thread):
                 for a in Driver.Drivers:
                     if isinstance(a[1], SensorRelayBoard.Relay):
                         a[1].setParameter("status", 1)
+            if hour is 17 and pasthour is not 17:
+                print "five pm!"
+                for a in Driver.Drivers:
+                    if isinstance(a[1], SensorRelayBoard.Relay):
+                        a[1].setParameter("status", 1)
             if hour is 10 and pasthour is not 10:
                 print "ten am!"
+                for a in Driver.Drivers:
+                    if isinstance(a[1], SensorRelayBoard.Relay):
+                        a[1].setParameter("status", 0)
+            if hour is 2 and pasthour is not 2:
+                print "two am!"
                 for a in Driver.Drivers:
                     if isinstance(a[1], SensorRelayBoard.Relay):
                         a[1].setParameter("status", 0)

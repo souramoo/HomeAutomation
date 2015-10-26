@@ -34,9 +34,9 @@ class connect(Driver):
     def setStatus(self, status):
         self.status = status
         if status == 0:
-            subprocess.call(['/usr/bin/gatttool', '-b', self.mac, '--char-write-req', '-a', '0x0012', '-n', self.createPacket("[85, 161, " + self.id1 + ", " + self.id2 + ", 2, 2, 0, 0, 0, 0, 0]")])
+            subprocess.call(['/usr/bin/gatttool', '-b', self.mac, '--char-write-req', '-a', '0x0012', '-n', self.createPacket([85, 161, self.id1, self.id2, 2, 2, 0, 0, 0, 0, 0])])
         else:
-            subprocess.call(['/usr/bin/gatttool', '-b', self.mac, '--char-write-req', '-a', '0x0012', '-n', self.createPacket("[32, 161, " + self.id1 + ", " + self.id2 + ", 2, 1, 0, 0, 0, 0, 0]")])
+            subprocess.call(['/usr/bin/gatttool', '-b', self.mac, '--char-write-req', '-a', '0x0012', '-n', self.createPacket([32, 161, self.id1, self.id2, 2, 1, 0, 0, 0, 0, 0])])
         Sensor.EventQueue.put(["lightbulb", self.id, self.status])
 
     def getParameters(self):
@@ -87,17 +87,17 @@ class connect(Driver):
 
     def apply(self):
         if self.mode == 0:
-            subprocess.call(['/usr/bin/gatttool', '-b', self.mac, '--char-write-req', '-a', '0x0012', '-n', self.createPacket("[85, 161, " + self.id1 + ", " + self.id2 + ", 2, 4, "+str(self.color)+", 100, 0, 0, 0]")])
-            subprocess.call(['/usr/bin/gatttool', '-b', self.mac, '--char-write-req', '-a', '0x0012', '-n', self.createPacket("[85, 161, " + self.id1 + ", " + self.id2 + ", 2, 5, "+str(self.color)+", "+str(self.brightness)+", 0, 0, 0]")])
+            subprocess.call(['/usr/bin/gatttool', '-b', self.mac, '--char-write-req', '-a', '0x0012', '-n', self.createPacket([85, 161, self.id1, self.id2 , 2, 4, self.color, 100, 0, 0, 0])])
+            subprocess.call(['/usr/bin/gatttool', '-b', self.mac, '--char-write-req', '-a', '0x0012', '-n', self.createPacket([85, 161, self.id1, self.id2, 2, 5, self.color, self.brightness, 0, 0, 0])])
         elif self.mode == 1:
-            subprocess.call(['/usr/bin/gatttool', '-b', self.mac, '--char-write-req', '-a', '0x0012', '-n', self.createPacket("[20, 161, " + self.id1 + ", " + self.id2 + ", 4, 4, "+str(self.temp)+", 255, 0, 0, 0]")])
-            subprocess.call(['/usr/bin/gatttool', '-b', self.mac, '--char-write-req', '-a', '0x0012', '-n', self.createPacket("[20, 161, " + self.id1 + ", " + self.id2 + ", 4, 5, "+str(self.temp)+", "+str(self.brightness)+", 0, 0, 0]")])
+            subprocess.call(['/usr/bin/gatttool', '-b', self.mac, '--char-write-req', '-a', '0x0012', '-n', self.createPacket([20, 161, self.id1, self.id2, 4, 4, self.temp, 255, 0, 0, 0])])
+            subprocess.call(['/usr/bin/gatttool', '-b', self.mac, '--char-write-req', '-a', '0x0012', '-n', self.createPacket([20, 161, self.id1, self.id2 , 4, 5, self.temp,self.brightness, 0, 0, 0])])
         f = open( "persist/"+str(self.id), "wb" )
         pickle.dump(self.getParameters(), f)
         f.close()
 
     def createPacket(self, data):
-        input = eval(data)
+        input = data
 
         k = input[0]
         # checksum

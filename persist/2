@@ -2,7 +2,7 @@
 (lp1
 S'status'
 p2
-aI1
+aI0
 a(lp3
 aS'switch'
 p4
@@ -15,7 +15,7 @@ ag4
 aa(lp8
 S'color'
 p9
-aI60
+aI150
 a(lp10
 (lp11
 I2
