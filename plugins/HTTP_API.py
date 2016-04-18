@@ -35,7 +35,7 @@ def Handler(environ, start_response):
 
 class ServerThread(threading.Thread):
     def run(self):
-        cherrypy.config.update({'server.socket_host': '192.168.2.224',
+        cherrypy.config.update({'server.socket_host': '192.168.2.116',
                         'server.socket_port': 8090,
                        })
         cherrypy.tree.graft(Handler, '/')

@@ -9,3 +9,12 @@ This system provides a simple plug and play architecture, where I can write Driv
 EventProcessors can be subclasses to provide a way for different triggers to provide different outputs. A HTTP API is provided (implemented as a sensor) to allow control over devices over wifi, for example.
 
 Drivers support persistance of data to provide continuity.
+
+## Requirements
+
+```
+bluez
+python
+python-serial
+python-cherrypy
+```

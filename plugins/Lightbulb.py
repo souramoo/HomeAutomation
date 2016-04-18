@@ -4,16 +4,33 @@
 from Driver import Driver
 import Sensor
 import subprocess
-import sys, string
+import sys, string, time
 import os.path
 import pickle
+from Queue import Queue
+import threading
+
+class GattQueue(threading.Thread):
+    def __init__(self, mac, dev, args=(), kwargs=None):
+        threading.Thread.__init__(self, args=(), kwargs=None)
+        self.queue = Queue()
+        self.dev = dev
+        self.mac = mac
+        self.daemon = True
+
+    def run(self):
+        while True:
+            val = self.queue.get()
+            print(val)
+            subprocess.call(['/usr/bin/gatttool', '-i', self.dev, '-b', self.mac, '--char-write-req', '-a', '0x0012', '-n', val])
 
 class connect(Driver):
-    def __init__(self, id, mac, id1, id2):
+    def __init__(self, id, id1, id2, q):
         Driver.__init__(self, id)
-        self.mac = mac
         self.id1 = id1
         self.id2 = id2
+        self.q = q.queue
+        q.start()
 
         if os.path.isfile("persist/"+str(self.id)):
             f = open("persist/"+str(self.id), "rb")
@@ -34,9 +51,9 @@ class connect(Driver):
     def setStatus(self, status):
         self.status = status
         if status == 0:
-            subprocess.call(['/usr/bin/gatttool', '-b', self.mac, '--char-write-req', '-a', '0x0012', '-n', self.createPacket([85, 161, self.id1, self.id2, 2, 2, 0, 0, 0, 0, 0])])
+            self.q.put(self.createPacket([85, 161, self.id1, self.id2, 2, 2, 0, 0, 0, 0, 0]))
         else:
-            subprocess.call(['/usr/bin/gatttool', '-b', self.mac, '--char-write-req', '-a', '0x0012', '-n', self.createPacket([32, 161, self.id1, self.id2, 2, 1, 0, 0, 0, 0, 0])])
+            self.q.put(self.createPacket([32, 161, self.id1, self.id2, 2, 1, 0, 0, 0, 0, 0]))
         Sensor.EventQueue.put(["lightbulb", self.id, self.status])
 
     def getParameters(self):
@@ -61,6 +78,7 @@ class connect(Driver):
         elif param == "brightness":
             self.brightness = int(value)
         self.apply()
+        time.sleep(0.2)
 
     def setParameterInternal(self, param, value):
         if param == "status":
@@ -87,11 +105,11 @@ class connect(Driver):
 
     def apply(self):
         if self.mode == 0:
-            subprocess.call(['/usr/bin/gatttool', '-b', self.mac, '--char-write-req', '-a', '0x0012', '-n', self.createPacket([85, 161, self.id1, self.id2 , 2, 4, self.color, 100, 0, 0, 0])])
-            subprocess.call(['/usr/bin/gatttool', '-b', self.mac, '--char-write-req', '-a', '0x0012', '-n', self.createPacket([85, 161, self.id1, self.id2, 2, 5, self.color, self.brightness, 0, 0, 0])])
+            self.q.put(self.createPacket([85, 161, self.id1, self.id2 , 2, 4, self.color, 100, 0, 0, 0]))
+            self.q.put(self.createPacket([85, 161, self.id1, self.id2, 2, 5, self.color, self.brightness, 0, 0, 0]))
         elif self.mode == 1:
-            subprocess.call(['/usr/bin/gatttool', '-b', self.mac, '--char-write-req', '-a', '0x0012', '-n', self.createPacket([20, 161, self.id1, self.id2, 4, 4, self.temp, 255, 0, 0, 0])])
-            subprocess.call(['/usr/bin/gatttool', '-b', self.mac, '--char-write-req', '-a', '0x0012', '-n', self.createPacket([20, 161, self.id1, self.id2 , 4, 5, self.temp,self.brightness, 0, 0, 0])])
+            self.q.put(self.createPacket([20, 161, self.id1, self.id2, 4, 4, self.temp, 255, 0, 0, 0]))
+            self.q.put(self.createPacket([20, 161, self.id1, self.id2 , 4, 5, self.temp,self.brightness, 0, 0, 0]))
         f = open( "persist/"+str(self.id), "wb" )
         pickle.dump(self.getParameters(), f)
         f.close()

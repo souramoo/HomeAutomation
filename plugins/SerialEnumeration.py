@@ -10,9 +10,10 @@ class testDevice(threading.Thread):
         threading.Thread.__init__(self)
         self.f = file
     def run(self):
+        print("   -> Asking %s..." % self.f)
         ser = serial.Serial(self.f)
-        ser.open()
-        ser.isOpen()
+        #ser.open()
+        #ser.isOpen()
 
         serid = ser.readline()
         if serid.startswith("S:"):
@@ -32,9 +33,11 @@ def find(name):
             return a[0]
     raise Exception("No "+name+" arduino device found")
 
+print(" * Enumerating serial interfaces...")
 init()
 while len(processing) > 0:
     pass
+print(" * Serial ports enumerated!")
 
 if __name__ == "__main__":
     for a in Arduinos:

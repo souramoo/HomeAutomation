@@ -21,26 +21,29 @@ except:
     pass
 
 # Interface with a light production mechanism
-test = Lightbulb.connect(1, "44:A6:E5:03:27:F9", 71, 151)
-test.setStatus(1)
-#test2 = Lightbulb.connect(2, "44:A6:E5:03:27:DF", 89, 119)
+print(" * Connecting lightbulbs...")
+test = Lightbulb.connect(1, 71, 151, Lightbulb.GattQueue("44:A6:E5:03:27:F9", "hci0"))
+test2 = Lightbulb.connect(2, 89, 119, Lightbulb.GattQueue("44:A6:E5:03:27:DF", "hci1"))
+print(" * Lightbulbs connected!")
 
 # Various telemetry and electromagnetic relay control
 #srb = SensorRelayBoard.SensorRelayBoard(SerialEnumeration.find("sensorrelay"))
 #SensorRelayBoard.Relay(3, 1, srb.ser)
 
-# Allow control over a most curious telegraphy system
-#HTTP_API.HTTP_API()
+# Allow control over a Highly Terrific but Troublesome Protocol
+HTTP_API.HTTP_API()
 
 # Test temporal quantification mechanism
 #CustomHandlers.Timer().start()
 
-#test.setStatus(1)
-#time.sleep(5)
+#test.setStatus(0)
+#test2.setStatus(0)
+#time.sleep(2)
 #test.setParameter("color", 1)
 #test.setParameter("temp", 144)
 #time.sleep(5)
-#test.setStatus(0)
+#test.setStatus(1)
+#test2.setStatus(1)
 
 #print test.getParameters()
 
