@@ -7,7 +7,7 @@ import threading
 class RotaryDial(object):
     def __init__(self, port):
         self.ser = serial.Serial(port, 9600)
-        self.ser.open()
+#        self.ser.open()
         RotaryReader(self.ser).start()
 
 class RotaryReader(threading.Thread):
@@ -18,5 +18,6 @@ class RotaryReader(threading.Thread):
     def run(self):
         while True:
             data = self.ser.readline().strip()
+#            print(data)
             if not data.startswith("S:"):
                 Sensor.EventQueue.put(["rotary", data])
